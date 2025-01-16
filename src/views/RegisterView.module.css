@@ -1,0 +1,73 @@
+.formContainer {
+    display: flex;
+    justify-content: center;
+}
+
+@media all and (display-mode: fullscreen) {
+    .formContainer {
+        margin: 5%;
+    }
+}
+
+.form {
+    background-color: rgb(26, 24, 25);
+    border-radius: 15px;
+    position: fixed;
+    margin-top: 8%;
+    width: 420px;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.formTitle {
+    color: hotpink;
+    font-size: 50px;
+    margin-top: 2%;
+}
+
+.boxLabels {
+    color: hotpink;
+    margin-left: 10%;
+    margin-top: 8%;
+    margin-bottom: 1%;
+}
+
+.infoBoxes {
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+.registerButton {
+    background-color: hotpink;
+    color: white;
+    border-radius: 7px;
+    margin-top: 6%;
+    margin-bottom: 3%;
+    margin-left: 20%;
+    margin-right: 20%;
+    height: 30px;
+}
+
+.registerButton:hover {
+    border: 2px;
+    border-style: solid;
+    border-color: gold;
+}
+
+.genreCheckList {
+    margin-top: 30px;
+    display: grid;
+    grid-template-rows: repeat(5, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+
+}
+
+.checkBoxLabelPair {
+    margin: auto;
+}
+
+.genreCheckList label {
+    color: hotpink;
+}

@@ -1,0 +1,105 @@
+.pageTitle {
+    color: hotpink;
+    font-size: 60px;
+    margin-left: 14%;
+}
+
+.infoTitle {
+    color: hotpink;
+    font-size: 30px;
+    position: absolute;
+    margin-left: 21%;
+    margin-top: -3%;
+}
+
+.genreTitle {
+    color: hotpink;
+    font-size: 30px;
+    position: absolute;
+    margin-left: 0%;
+    margin-top: -4%;
+}
+
+.settingsForm {
+    background-color: rgb(26, 24, 25);
+    border-radius: 15px;
+    position: fixed;
+    margin-left: 14%;
+    margin-top: 2%;
+    height: 500px;
+    width: 2000px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.accountInfo {
+    margin-top: 13%;
+    display: flex;
+    flex-direction: column;
+}
+
+.settingsBoxLabel {
+    margin: auto;
+    color: hotpink;
+}
+
+.settingsInfoBox {
+    margin: auto;
+}
+
+.genresSelection {
+    margin-top: 15%;
+    display: grid;
+    grid-template-rows: repeat(4, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.checkBoxLabelPair {
+    margin: auto;
+}
+
+.labelCheckboxPair label {
+    color: hotpink;
+    font-size: 35px;
+}
+
+.labelCheckboxPair input {
+    height: 20px;
+    width: 30px;
+}
+
+.settingsForm button {
+    margin: auto;
+}
+
+.applyButton {
+    background-color: hotpink;
+    color: white;
+    font-size: 25px;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    border-radius: 5px;
+    border-style: solid;
+
+    height: 40px;
+    width: 200px;
+}
+
+.backButtonSettings {
+    background-color: hotpink;
+    color: white;
+    font-size: 30px;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    border-radius: 5px;
+    border-style: solid;
+
+    position: relative;
+    height: 40px;
+    width: 125px;
+    left: -9%;
+}
+
+.settingsForm button:hover {
+    border-color: goldenrod;
+    border-width: 3px;
+}

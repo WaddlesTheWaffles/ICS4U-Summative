@@ -1,12 +1,16 @@
-import { createContext, useContext } from "react";
+import { useState, createContext, useContext } from "react";
+import { Map } from 'immutable';
 
 const StoreContext = createContext();
 
 export const StoreProvider = ({ children }) => {
-    // Add your state management code here
+    const [accountList, setAccountList] = useState([]);
+    const [allGenreList, setAllGenreList] = useState(Map());
+    const [currentAccount, setCurrentAccount] = useState({})
+    const [cart, setCart] = useState(Map());
 
     return (
-        <StoreContext.Provider value={{ }}>
+        <StoreContext.Provider value={{ accountList, setAccountList, allGenreList, setAllGenreList, currentAccount, setCurrentAccount, cart, setCart }}>
             {children}
         </StoreContext.Provider>
     );

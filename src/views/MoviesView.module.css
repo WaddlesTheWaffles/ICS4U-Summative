@@ -1,0 +1,22 @@
+.genreSection {
+    display: flex;
+    justify-content: space-between;
+}
+
+.genreList {
+width: auto;
+margin-left: 40px;
+}
+
+.genreView {
+width: auto;
+margin: auto;
+}
+
+.welcomeTitle {
+    color: hotpink;
+    font-size: 50px;
+    margin-left: 70px;
+    margin-top: 2%;
+    margin-bottom: 4%;
+}

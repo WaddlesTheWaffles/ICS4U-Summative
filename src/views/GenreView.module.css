@@ -1,0 +1,87 @@
+.moviesContainer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(7, auto);
+    gap: 40px;
+    padding: 20px;
+    width: auto;
+}
+
+.moviePoster {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: auto;
+}
+
+.posterContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    z-index: 10;
+    pointer-events: auto;
+}
+
+.posterContainer img {
+    border: solid;
+    border-color: goldenrod;
+    border-width: 5px;
+    border-radius: 25px;
+    width: 100%;
+    height: auto;
+}
+
+.movieTitle {
+    text-align: center;
+    font-size: 25px;
+    color: hotpink;
+    margin-top: 15px;
+}
+
+.pageSelector {
+    display: flex;
+    justify-content: space-around;
+}
+
+.prevButton {
+    border-radius: 10px;
+    height: 60px;
+    width: 110px;
+    background-color: hotpink;
+    color: white;
+    font-size: large;
+}
+
+.nextButton {
+    border-radius: 10px;
+    height: 60px;
+    width: 110px;
+    background-color: hotpink;
+    color: white;
+    font-size: large;
+}
+
+.pageNumberBox {
+    border-radius: 10px;
+    height: 40px;
+    width: 100px;
+}
+
+.buyButton {
+    background-color: hotpink;
+    color: white;
+    font-size: 25px;
+    border-radius: 10px;
+    width: 100px;
+    height: 40px;
+    margin-top: 0px;
+}
+
+.buyButton:disabled {
+    background-color: rgb(180, 73, 127);
+    color: rgb(185, 184, 184);
+}

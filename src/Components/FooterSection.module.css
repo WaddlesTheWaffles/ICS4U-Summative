@@ -1,0 +1,42 @@
+.footerSec {
+    background-color: rgb(19, 16, 9);
+    width: 100%;
+    height: 200px;
+    margin-top: 10%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.infoBox {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.text {
+    color: hotpink;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 20px;
+    font-weight: normal;
+    font-style: normal;
+    margin-bottom: 0px;
+}
+
+.title {
+    color: gold;
+    font-size: 30px;
+}
+
+.textLink:link {
+    color: gold;
+    font-size: 20px; 
+}
+
+.textLink:hover{
+    color: goldenrod;
+}
+
+.textLink:visited {
+    color: rgb(138, 101, 10);
+}

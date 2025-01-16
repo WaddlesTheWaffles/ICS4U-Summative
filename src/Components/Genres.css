@@ -1,0 +1,49 @@
+.genreListContainer {
+    width: auto;
+    margin-top: 5%;
+}
+
+.genreTitle {
+    color: hotpink;
+    margin-top: 1%;
+    margin-left: 2%;
+    font-size: 35px;
+    font-weight: bold;
+}
+
+.genresList {
+    background-color: rgb(20, 20, 20);
+    border-color: goldenrod;
+    border-style: solid;
+    width: 320px;
+    height: auto;
+    max-height: 1300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 20px 10px;
+    border-radius: 15px;
+    overflow-y: auto;
+}
+
+.genres {
+    background-color: hotpink;
+    color: white;
+    font-size: large;
+    border-radius: 10px;
+    width: 180px;
+    height: 45px;
+    margin: 20px;
+}
+
+.genres:hover {
+    border-color: goldenrod;
+    border-style: solid;
+}
+
+.genres.selected {
+    background-color: rgb(218, 80, 149);
+    color: black;
+    border-color: hotpink;
+}

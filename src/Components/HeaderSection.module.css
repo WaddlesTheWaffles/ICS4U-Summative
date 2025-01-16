@@ -1,0 +1,65 @@
+.toolbar {
+    background-color: rgb(29, 27, 27);
+    z-index: 1000;
+    border-bottom-color: hotpink;
+    border-style: solid;
+    height: 75px;
+    top: 0px;
+    position: sticky;
+    display: flex;
+    justify-content: space-around;
+}
+
+.title {
+    color: hotpink;
+    font-family: verdana, Helvetica, sans-serif;
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-right: auto;
+    left: 15px;
+    position: relative;
+}
+
+.title:hover {
+    text-shadow: 1px 0 #fff, -1px 0 #fff, 0 1px #fff, 0 -1px #fff,
+        1px 1px #fff, -1px -1px #fff, 1px -1px #fff, -1px 1px #fff;
+}
+
+.gold {
+    color: gold;
+    font-family: verdana, Helvetica, sans-serif;
+}
+
+.button {
+    background-color: hotpink;
+    color: white;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-size: larger;
+    border-radius: 7px;
+    width: 100px;
+}
+
+.button:hover {
+    border: 2px;
+    border-style: solid;
+    border-color: gold;
+}
+
+@media all and (display-mode: browser) {
+    .button {
+        height: 50px;
+        margin-top: 10px;
+        margin-left: 25px;
+        margin-right: 25px;
+    }
+}
+
+@media all and (display-mode: fullscreen) {
+    .toolbar {
+        height: 100px;
+    }
+    .button {
+        height: 55px;
+        margin: 25px;
+    }
+}
