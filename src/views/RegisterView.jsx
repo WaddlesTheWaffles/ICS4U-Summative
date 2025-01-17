@@ -2,6 +2,8 @@ import styles from './RegisterView.module.css';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStoreContext } from "../Context";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from '../firebase';
 import HeaderSection from "../Components/HeaderSection";
 
 function RegisterView() {
@@ -112,7 +114,7 @@ function RegisterView() {
             <HeaderSection />
             <div className={styles.formContainer}>
                 <h1 className={styles.formTitle}>Register</h1>
-                <form className={styles.form} onSubmit={() => { event.preventDefault(); submitForm() }} >
+                <form className={styles.form} onSubmit={() => { event.preventDefault(); /*submitForm()*/ }} >
                     <label className={styles.boxLabels} htmlFor="firstNameInfoBox" >First Name:</label>
                     <input required className={styles.infoBoxes} type="text" value={firstName} onChange={(event) => { setFirstName(String(event.target.value)) }} />
                     <label className={styles.boxLabels} htmlFor="lastNameInfoBox" >Last Name:</label>
