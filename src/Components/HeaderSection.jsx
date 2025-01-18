@@ -5,17 +5,17 @@ import { useStoreContext } from "../Context";
 function HeaderSection() {
 
     const navigate = useNavigate();
-    const { currentAccount, setCurrentAccount } = useStoreContext();
+    const { currentUser, setCurrentUser } = useStoreContext();
 
     function logout() {
-        setCurrentAccount({});
+        setCurrentUser({});
         navigate('/');
     }
 
     return (
         <div className={styles.toolbar} >
-            <h1 className={styles.title} onClick={() => { currentAccount.email ? navigate('/movies') : navigate('/') }} ><span className={styles.gold}>Crowned</span> Pig</h1>
-            {Object.keys(currentAccount).length <= 0
+            <h1 className={styles.title} onClick={() => { currentUser.email ? navigate('/movies') : navigate('/') }} ><span className={styles.gold}>Crowned</span> Pig</h1>
+            {Object.keys(currentUser).length <= 0
                 ? <div>
                     <button className={styles.button} onClick={() => navigate('/register')} >Sign Up</button>
                     <button className={styles.button} onClick={() => navigate('/login')} >Sign In</button>

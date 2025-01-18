@@ -2,15 +2,15 @@ import styles from './RegisterView.module.css';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStoreContext } from "../Context";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from '../firebase';
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import {auth} from "../firebase";
 import HeaderSection from "../Components/HeaderSection";
 
 function RegisterView() {
 
+    const auth = getAuth();
     const navigate = useNavigate();
-    const { allGenreList, setAllGenreList } = useStoreContext();
-    const { accountList, setAccountList } = useStoreContext();
+    const { allGenreList, setAllGenreList, accountList, setAccountList, currentUser, setCurrentUser } = useStoreContext();
 
     const totalGenreList = [
         { "genreName": "Action", "id": 28 },
@@ -36,48 +36,45 @@ function RegisterView() {
     const [rePassword, setRePassword] = useState("");
     const [chosenGenreList, setChosenGenreList] = useState([]);
 
-    function submitForm() {
-        if (!sameEmailChecker()) {
-            if (rePasswordCheck()) {
-                if (chosenGenreList.length < 10) {
-                    alert('Please select minimum 10 genres');
-                } else {
-                    setAllGenreList((prevList) => prevList.set(email, chosenGenreList));
-                    setAccountList(prevList => { //Creates an object filled with info and adds it the to account list
+    async function registerByEmail() {
 
-                        return [...prevList, {
-                            email: email,
-                            password: password,
-                            firstName: firstName,
-                            lastName: lastName
-                        }]
-                    })
-                    navigate('/login');
-                }
-            } else {
-                alert('Passwords are not the same');
-            }
-        } else {
-            alert('This email is already in use');
+        if (password != rePassword) {
+            alert('Passwords do not match');
+            return;
         }
-    }
-
-    function rePasswordCheck() {
-        if (rePassword === password) {
-            return true
-        } else {
-            return false
+        if (chosenGenreList.length < 10) {
+            alert('Please choose at least ten genre');
+            return;
         }
-    }
 
-    function sameEmailChecker() {
-
-        for (let i = 0; i < accountList.length; i++) {
-            if (accountList[i].email == email) {
-                return true
+        try {
+            const user = (await createUserWithEmailAndPassword(auth, email, password)).user
+            await updateProfile(user, { displayName: `${firstName} ${lastName}` })
+            setCurrentUser(user);
+            setAllGenreList((prevList) => prevList.set(email, chosenGenreList));
+            navigate('/movies');
+        } catch (error) {
+            switch (error.code) {
+                case 'auth/email-already-in-use':
+                    alert('Email already in use');
+                    break;
+                case 'auth/invalid-email':
+                    alert('Invalid email');
+                    break;
+                case 'auth/weak-password':
+                    alert('Password is too weak, 6+ characters required');
+                    break;
+                case "auth/too-many-requests":
+                    alert('Too many attempts. Please try again later.');
+                    break;
+                case "auth/network-request-failed":
+                    alert('Network error. Please check your connection.');
+                    break;
+                default:
+                    alert('An error occurred');
+                    break;
             }
         }
-        return false
     }
 
     function renderCheckboxes() {
@@ -114,7 +111,7 @@ function RegisterView() {
             <HeaderSection />
             <div className={styles.formContainer}>
                 <h1 className={styles.formTitle}>Register</h1>
-                <form className={styles.form} onSubmit={() => { event.preventDefault(); /*submitForm()*/ }} >
+                <form className={styles.form} onSubmit={() => { event.preventDefault(); registerByEmail() }} >
                     <label className={styles.boxLabels} htmlFor="firstNameInfoBox" >First Name:</label>
                     <input required className={styles.infoBoxes} type="text" value={firstName} onChange={(event) => { setFirstName(String(event.target.value)) }} />
                     <label className={styles.boxLabels} htmlFor="lastNameInfoBox" >Last Name:</label>

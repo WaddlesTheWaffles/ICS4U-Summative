@@ -9,7 +9,7 @@ function SettingsView() {
     const navigate = useNavigate();
     const { allGenreList, setAllGenreList } = useStoreContext();
     const { accountList, setAccountList } = useStoreContext();
-    const { currentAccount, setCurrentAccount } = useStoreContext();
+    const { currentUser, setCurrentUser } = useStoreContext();
 
     const totalGenreList = [
         { "genreName": "Action", "id": 28 },
@@ -28,11 +28,11 @@ function SettingsView() {
         { "genreName": "War", "id": 10752 },
         { "genreName": "Western", "id": 37 }
     ];
-    const [firstName, setFirstName] = useState(currentAccount.firstName);
-    const [lastName, setLastName] = useState(currentAccount.lastName);
-    const [email, setEmail] = useState(currentAccount.email);
+    const [firstName, setFirstName] = useState(currentUser.firstName);
+    const [lastName, setLastName] = useState(currentUser.lastName);
+    const [email, setEmail] = useState(currentUser.email);
 
-    const [chosenGenreList, setChosenGenreList] = useState(allGenreList.get(currentAccount.email) || []);
+    const [chosenGenreList, setChosenGenreList] = useState(allGenreList.get(currentUser.email) || []);
 
     function renderCheckboxes() {
         return totalGenreList.map((genre) => (
@@ -71,10 +71,10 @@ function SettingsView() {
         if (chosenGenreList.length < 10) {
             alert('Please choose minimum 10 genres')
         } else {
-            let accountIndex = accountList.findIndex(account => account.email === currentAccount.email);
-            currentAccount.firstName = firstName;
-            currentAccount.lastName = lastName;
-            accountList[accountIndex] = currentAccount;
+            let accountIndex = accountList.findIndex(account => account.email === currentUser.email);
+            currentUser.firstName = firstName;
+            currentUser.lastName = lastName;
+            accountList[accountIndex] = currentUser;
             setAllGenreList(allGenreList.set(email, chosenGenreList))
             alert("Settings have been saved.");
         }

@@ -9,7 +9,7 @@ function LoginView() {
     const navigate = useNavigate();
     const { cart, setCart } = useStoreContext();
     const { accountList, setAccountList } = useStoreContext();
-    const { currentAccount, setCurrentAccount } = useStoreContext()
+    const { currentUser, setCurrentUser } = useStoreContext()
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -20,7 +20,7 @@ function LoginView() {
         } else if (accountList.find(account => account.email === email)) { //Checks if the email exist inside the list
             const accountIndex = accountList.findIndex(account => account.email === email)
             if ((email === accountList[accountIndex].email) && (password === accountList[accountIndex].password)) {
-                setCurrentAccount(accountList[accountIndex]);
+                setCurrentUser(accountList[accountIndex]);
                 setCart(cart.clear()) //clears the cart when ever user logins
                 navigate('/movies');
 
