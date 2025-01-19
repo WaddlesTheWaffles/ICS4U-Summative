@@ -3,7 +3,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStoreContext } from "../Context";
 import { getAuth, createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "../firebase";
+import { doc, setDoc } from 'firebase/firestore';
+import { auth, firestore } from "../firebase";
 import HeaderSection from "../Components/HeaderSection";
 
 function RegisterView() {
@@ -51,7 +52,17 @@ function RegisterView() {
             const user = (await createUserWithEmailAndPassword(auth, email, password)).user
             await updateProfile(user, { displayName: `${firstName} ${lastName}` })
             setCurrentUser(auth.currentUser);
-            setAllGenreList((prevList) => prevList.set(email, chosenGenreList));
+
+            await setDoc(doc(firestore, 'users', user.uid), {
+                email: email,
+                firstName: firstName,
+                lastName: lastName,
+                genreList: chosenGenreList,
+                signInMethod: 'email',
+                previousPerchaseHistory: []
+            })
+
+            setAllGenreList((prevList) => prevList.set(email, chosenGenreList)); //delete this line when db is implemented
             navigate('/movies');
         } catch (error) {
             switch (error.code) {
@@ -72,6 +83,8 @@ function RegisterView() {
                     break;
                 default:
                     alert('An error occurred');
+                    console.error(error.code);
+                    console.error(error.message);
                     break;
             }
         }
@@ -87,7 +100,16 @@ function RegisterView() {
         try {
             const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
             setCurrentUser(auth.currentUser);
-            setAllGenreList((prevList) => prevList.set((user.email), chosenGenreList));
+
+            await setDoc(doc(firestore, 'users', user.uid), {
+                email: email,
+                firstName: firstName,
+                lastName: lastName,
+                genreList: chosenGenreList,
+                signInMethod: 'google',
+                previousPerchaseHistory: []
+            })
+
             navigate('/movies');
         } catch (error) {
             switch (error.code) {

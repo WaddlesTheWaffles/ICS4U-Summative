@@ -34,7 +34,6 @@ function LoginView() {
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             setCurrentUser(userCredential.user);
-            setAllGenreList(genreList);
             setCart(cart.clear());
             navigate('/movies');
         } catch (error) {
