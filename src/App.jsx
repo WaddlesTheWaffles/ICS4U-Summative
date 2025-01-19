@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { StoreProvider, useStoreContext } from "./Context";
 import { useState, useEffect } from "react";
+import { auth } from "./firebase";
 import "./App.css";
 import HomeView from "./Views/HomeView";
 import RegisterView from "./Views/RegisterView";
@@ -18,10 +19,9 @@ function AppContent() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = auth.currentUser
     if (user) {
       setCurrentUser(user);
-      navigate('/movies');
     }
     setIsUserLoaded(true); // Indicate that the userData has been pulled from localStorage
   }, [setCurrentUser, navigate]);
