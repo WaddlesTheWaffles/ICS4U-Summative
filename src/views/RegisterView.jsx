@@ -2,8 +2,8 @@ import styles from './RegisterView.module.css';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStoreContext } from "../Context";
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import {auth} from "../firebase";
+import { getAuth, createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../firebase";
 import HeaderSection from "../Components/HeaderSection";
 
 function RegisterView() {
@@ -77,6 +77,37 @@ function RegisterView() {
         }
     }
 
+    async function registerByGoogle() {
+        event.preventDefault();
+        if (chosenGenreList.length < 10) {
+            alert('Please choose at least ten genre');
+            return;
+        }
+
+        try {
+            const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
+            setCurrentUser(auth.currentUser);
+            setAllGenreList((prevList) => prevList.set((user.email), chosenGenreList));
+            navigate('/movies');
+        } catch (error) {
+            switch (error.code) {
+                case 'auth/popup-closed-by-user':
+                    alert('Popup closed by user');
+                    break;
+                case 'auth/cancelled-popup-request':
+                    alert('Popup request cancelled');
+                    break;
+                case 'auth/popup-blocked':
+                    alert('Popup blocked by browser');
+                case 'auth/account-exists-with-different-credential':
+                    alert('This email is already in use with a different provider');
+                    break;
+            }
+        }
+
+
+    }
+
     function renderCheckboxes() {
         return totalGenreList.map((genre) => (
             <div key={genre.id} className={styles.checkBoxLabelPair}>
@@ -128,9 +159,10 @@ function RegisterView() {
                     </div>
 
                     <input className={styles.registerButton} type="submit" value={"Register"} />
+                    <button className='googleRegisterButton' onClick={(event) => { event.preventDefault(); registerByGoogle(); }}>Register With Google</button>
                 </form>
             </div>
-        </div>
+        </div >
     )
 }
 

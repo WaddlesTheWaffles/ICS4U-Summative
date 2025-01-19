@@ -2,22 +2,39 @@ import styles from './LoginView.module.css'
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStoreContext } from "../Context";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import HeaderSection from "../Components/HeaderSection";
 
 function LoginView() {
     const auth = getAuth();
     const navigate = useNavigate();
     const { cart, setCart } = useStoreContext();
-    const { accountList, setAccountList } = useStoreContext();
-    const { currentUser, setCurrentUser } = useStoreContext();
+    const { currentUser, setCurrentUser, setAllGenreList } = useStoreContext();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const genreList = [ //temporary genre list for when the user signs in with google
+        { "genreName": "Action", "id": 28 },
+        { "genreName": "Adventure", "id": 12 },
+        { "genreName": "Animation", "id": 16 },
+        { "genreName": "Comedy", "id": 35 },
+        { "genreName": "Crime", "id": 80 },
+        { "genreName": "Family", "id": 10751 },
+        { "genreName": "Fantasy", "id": 14 },
+        { "genreName": "History", "id": 36 },
+        { "genreName": "Horror", "id": 27 },
+        { "genreName": "Music", "id": 10402 },
+        { "genreName": "Mystery", "id": 9648 },
+        { "genreName": "Sci-Fi", "id": 878 },
+        { "genreName": "Thriller", "id": 53 },
+        { "genreName": "War", "id": 10752 },
+        { "genreName": "Western", "id": 37 }
+    ];
 
     async function signInWithEmail() {
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             setCurrentUser(userCredential.user);
+            setAllGenreList(genreList);
             setCart(cart.clear());
             navigate('/movies');
         } catch (error) {
@@ -44,6 +61,36 @@ function LoginView() {
         }
     }
 
+    async function signInWithGoogle() {
+
+        try {
+            const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
+            setCurrentUser(auth.currentUser);
+            navigate('/movies');
+        } catch (error) {
+            switch (error.code) {
+                case 'auth/popup-closed-by-user':
+                    alert('Popup closed by user');
+                    break;
+                case 'auth/cancelled-popup-request':
+                    alert('Popup request cancelled');
+                    break;
+                case 'auth/popup-blocked':
+                    alert('Popup blocked by browser');
+                    break;
+                case 'auth/account-exists-with-different-credential':
+                    alert('This email is already in use with a different provider');
+                    break;
+                default:
+                    console.error(error.code);
+                    console.error(error.message);
+                    alert('An error has occured with sign in, please try again later');
+                    break;
+            }
+        }
+
+    }
+
     return (
         <div>
             <HeaderSection />
@@ -55,6 +102,8 @@ function LoginView() {
                     <label className={styles.boxLabels}>Password:</label>
                     <input required className={styles.infoBoxes} type="password" value={password} onChange={(event) => { setPassword(String(event.target.value)) }} />
                     <input className={styles.loginButton} type="submit" value={"Login"} />
+
+                    <button className='googleLoginButton' onClick={(event) => { event.preventDefault(); signInWithGoogle() }}>Login With Google</button>
                 </form>
             </div>
         </div>
