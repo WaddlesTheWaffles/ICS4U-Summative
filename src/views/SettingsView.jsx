@@ -3,10 +3,13 @@ import HeaderSection from "../Components/HeaderSection";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStoreContext } from "../Context";
+import { getAuth } from 'firebase/auth';
+import { auth } from "../firebase";
 
 function SettingsView() {
 
     const navigate = useNavigate();
+    const auth = getAuth();
     const { allGenreList, setAllGenreList } = useStoreContext();
     const { accountList, setAccountList } = useStoreContext();
     const { currentUser, setCurrentUser } = useStoreContext();
@@ -28,11 +31,19 @@ function SettingsView() {
         { "genreName": "War", "id": 10752 },
         { "genreName": "Western", "id": 37 }
     ];
-    const [firstName, setFirstName] = useState(currentUser.firstName);
-    const [lastName, setLastName] = useState(currentUser.lastName);
-    const [email, setEmail] = useState(currentUser.email);
 
-    const [chosenGenreList, setChosenGenreList] = useState(allGenreList.get(currentUser.email) || []);
+    const [email, setEmail] = useState((auth.currentUser).email);
+    
+    try {
+        const testNameSplit = (auth.currentUser).displayName.split(' ');
+    } catch (error) {
+        alert('There is no display Name availble')
+    }
+    const nameSplit = (auth.currentUser).displayName.split(' ');
+    const [firstName, setFirstName] = useState(nameSplit[0]);
+    const [lastName, setLastName] = useState(nameSplit[1]);
+
+    const [chosenGenreList, setChosenGenreList] = useState(allGenreList.get(auth.currentUser.email) || []);
 
     function renderCheckboxes() {
         return totalGenreList.map((genre) => (

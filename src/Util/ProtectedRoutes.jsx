@@ -1,11 +1,13 @@
 import { Outlet, Navigate } from "react-router-dom";
 import { useStoreContext } from "../Context";
+import { getAuth } from 'firebase/auth';
+import { auth } from "../firebase";
 
 function ProtectedRoutes() {
-    const { currentUser } = useStoreContext();
+    const auth = getAuth();
 
     return (
-        currentUser.email ? <Outlet /> : <Navigate to="/login" />
+        auth.currentUser ? <Outlet /> : <Navigate to="/login" />
     )
 }
 

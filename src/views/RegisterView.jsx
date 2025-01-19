@@ -50,7 +50,7 @@ function RegisterView() {
         try {
             const user = (await createUserWithEmailAndPassword(auth, email, password)).user
             await updateProfile(user, { displayName: `${firstName} ${lastName}` })
-            setCurrentUser(user);
+            setCurrentUser(auth.currentUser);
             setAllGenreList((prevList) => prevList.set(email, chosenGenreList));
             navigate('/movies');
         } catch (error) {
