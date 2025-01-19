@@ -16,8 +16,6 @@
     color: hotpink;
     font-size: 30px;
     position: absolute;
-    margin-left: 0%;
-    margin-top: -4%;
 }
 
 .settingsForm {
@@ -26,8 +24,7 @@
     position: fixed;
     margin-left: 14%;
     margin-top: 2%;
-    height: 500px;
-    width: 2000px;
+    height: 520px;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
 }
@@ -59,11 +56,6 @@
     margin: auto;
 }
 
-.labelCheckboxPair label {
-    color: hotpink;
-    font-size: 35px;
-}
-
 .labelCheckboxPair input {
     height: 20px;
     width: 30px;
@@ -80,9 +72,9 @@
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     border-radius: 5px;
     border-style: solid;
-
     height: 40px;
     width: 200px;
+    margin-bottom: 20px;
 }
 
 .backButtonSettings {
@@ -92,14 +84,49 @@
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
     border-radius: 5px;
     border-style: solid;
-
     position: relative;
     height: 40px;
     width: 125px;
     left: -9%;
+    margin-bottom: 20px;
 }
 
 .settingsForm button:hover {
     border-color: goldenrod;
     border-width: 3px;
+}
+
+@media (max-width: 1280px) {
+    .settingsForm {
+        width: 1000px;
+    }
+
+    .genreTitle {
+        margin-top: -5.5%;
+    }
+
+    .labelCheckboxPair label {
+        color: hotpink;
+        display: grid;
+        grid-template-columns: 1fr;
+        font-size: 25px;
+    }
+}
+
+@media (min-width: 2048px) {
+    .settingsForm {
+        width: 2000px;
+    }
+
+    .genreTitle {
+        margin-left: 0%;
+        margin-top: -4%;
+    }
+
+    .labelCheckboxPair label {
+        color: hotpink;
+        display: grid;
+        grid-template-columns: 1fr;
+        font-size: 35px;
+    }
 }

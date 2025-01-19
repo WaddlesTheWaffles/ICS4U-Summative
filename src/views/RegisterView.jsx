@@ -62,6 +62,8 @@ function RegisterView() {
                 previousPerchaseHistory: []
             })
 
+            localStorage.setItem('user', JSON.stringify(auth.currentUser));
+
             setAllGenreList((prevList) => prevList.set(email, chosenGenreList)); //delete this line when db is implemented
             navigate('/movies');
         } catch (error) {

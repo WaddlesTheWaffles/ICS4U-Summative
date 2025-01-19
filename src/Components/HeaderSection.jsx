@@ -1,4 +1,5 @@
 import styles from './HeaderSection.module.css';
+import { useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useStoreContext } from "../Context";
 import { getAuth } from 'firebase/auth';
@@ -9,6 +10,14 @@ function HeaderSection() {
     const navigate = useNavigate();
     const auth = getAuth();
     const { currentUser, setCurrentUser } = useStoreContext();
+
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            setCurrentUser(user || {}); // Set currentUser to Firebase user or an empty object
+        });
+
+        return () => unsubscribe();
+    }, [setCurrentUser]);
 
     function logout() {
         auth.signOut();

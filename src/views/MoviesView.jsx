@@ -37,11 +37,11 @@ function MoviesView() {
    const [clickedFromFeature, setClickedFromFeature] = useState(false);
 
    try {
-      const testNameSplit = (auth.currentUser).displayName.split(' ');
+      const testNameSplit = (currentUser).displayName.split(' ');
   } catch (error) {
       alert('There is no display Name availble')
   }
-  const nameSplit = (auth.currentUser).displayName.split(' ');
+  const nameSplit = (currentUser).displayName.split(' ');
   const [firstName, setFirstName] = useState(nameSplit[0]);
   const [lastName, setLastName] = useState(nameSplit[1]);
 

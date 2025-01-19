@@ -32,8 +32,9 @@ function LoginView() {
 
     async function signInWithEmail() {
         try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            setCurrentUser(userCredential.user);
+            const user = await signInWithEmailAndPassword(auth, email, password);
+            setCurrentUser(user.user);
+            localStorage.setItem('user', JSON.stringify(auth.currentUser));
             setCart(cart.clear());
             navigate('/movies');
         } catch (error) {
@@ -65,6 +66,7 @@ function LoginView() {
         try {
             const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
             setCurrentUser(auth.currentUser);
+            setCart(cart.clear());
             navigate('/movies');
         } catch (error) {
             switch (error.code) {

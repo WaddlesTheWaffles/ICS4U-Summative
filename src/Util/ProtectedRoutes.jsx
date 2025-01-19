@@ -5,9 +5,10 @@ import { auth } from "../firebase";
 
 function ProtectedRoutes() {
     const auth = getAuth();
+    const { currentUser, setCurrentUser } = useStoreContext();
 
     return (
-        auth.currentUser ? <Outlet /> : <Navigate to="/login" />
+        currentUser ? <Outlet /> : <Navigate to="/login" />
     )
 }
 

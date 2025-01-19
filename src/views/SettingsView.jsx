@@ -1,18 +1,41 @@
 import styles from './SettingsView.module.css'
 import HeaderSection from "../Components/HeaderSection";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStoreContext } from "../Context";
 import { getAuth } from 'firebase/auth';
-import { auth } from "../firebase";
+import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
+import { auth, firestore } from "../firebase";
+import { get } from 'immutable';
+import { use } from 'react';
 
 function SettingsView() {
 
     const navigate = useNavigate();
     const auth = getAuth();
-    const { allGenreList, setAllGenreList } = useStoreContext();
-    const { accountList, setAccountList } = useStoreContext();
-    const { currentUser, setCurrentUser } = useStoreContext();
+    const { accountList, setAccountList, currentUser, setCurrentUser, allGenreList, setAllGenreList } = useStoreContext();
+    const [userData, setUserData] = useState(null);
+
+    useEffect(() => {
+        if (auth.currentUser) {
+            const fetchUserData = async () => {
+                try {
+                    const docRef = doc(firestore, 'users', (auth.currentUser).uid);
+                    const docSnapshot = await getDoc(docRef);
+                    if (docSnapshot.exists()) {
+                        setUserData(docSnapshot.data());
+                    } else {
+                        console.log("Document does not exist");
+                    }
+                } catch (error) {
+                    console.error("Error fetching user data:", error);
+                    alert('Error fetching user data. Please try again later.');
+                }
+            };
+            fetchUserData();
+        }
+    }, [auth.currentUser]);
+    //use userData.signInMethod to check if user is signed in with google or email
 
     const totalGenreList = [
         { "genreName": "Action", "id": 28 },
@@ -33,7 +56,7 @@ function SettingsView() {
     ];
 
     const [email, setEmail] = useState((auth.currentUser).email);
-    
+
     try {
         const testNameSplit = (auth.currentUser).displayName.split(' ');
     } catch (error) {
