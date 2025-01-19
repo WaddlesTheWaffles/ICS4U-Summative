@@ -10,12 +10,12 @@ const StoreContext = createContext();
 export const StoreProvider = ({ children }) => {
     const navigate = useNavigate();
     const [accountList, setAccountList] = useState([]);
-    const [allGenreList, setAllGenreList] = useState(Map());
+    const [userGenreList, setUserGenreList] = useState([]);
     const [currentUser, setCurrentUser] = useState({})
     const [cart, setCart] = useState(Map());
 
     return (
-        <StoreContext.Provider value={{ accountList, setAccountList, allGenreList, setAllGenreList, currentUser, setCurrentUser, cart, setCart }}>
+        <StoreContext.Provider value={{ accountList, setAccountList, userGenreList, setUserGenreList, currentUser, setCurrentUser, cart, setCart }}>
             {children}
         </StoreContext.Provider>
     );

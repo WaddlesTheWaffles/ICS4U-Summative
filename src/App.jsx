@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { StoreProvider, useStoreContext } from "./Context";
 import { useState, useEffect } from "react";
-import { auth } from "./firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, firestore } from "./firebase";
 import "./App.css";
 import HomeView from "./Views/HomeView";
 import RegisterView from "./Views/RegisterView";
@@ -14,17 +16,32 @@ import ErrorView from "./Views/ErrorView";
 import ProtectedRoutes from "./Util/ProtectedRoutes";
 
 function AppContent() {
-  const { setCurrentUser } = useStoreContext();
+  const { setCurrentUser, setUserGenreList } = useStoreContext();
   const [isUserLoaded, setIsUserLoaded] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const user = auth.currentUser
-    if (user) {
-      setCurrentUser(user);
-    }
-    setIsUserLoaded(true); // Indicate that the userData has been pulled from localStorage
-  }, [setCurrentUser, navigate]);
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setCurrentUser(user);
+        const docRef = doc(firestore, 'users', user.uid);
+        const docSnapshot = await getDoc(docRef);
+
+        if (docSnapshot.exists()) {
+          const userInfo = docSnapshot.data();
+          setUserGenreList(userInfo.genreList);
+
+        } else {
+          console.error("Document does not exist");
+        }
+      } else {
+        console.error("No current user");
+      }
+      setIsUserLoaded(true);
+    });
+
+    return () => unsubscribe();
+  }, [setCurrentUser, setUserGenreList, navigate]);
 
   if (!isUserLoaded) {
     return <div>Loading...</div>;

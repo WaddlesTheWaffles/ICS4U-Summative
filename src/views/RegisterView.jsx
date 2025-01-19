@@ -11,7 +11,7 @@ function RegisterView() {
 
     const auth = getAuth();
     const navigate = useNavigate();
-    const { allGenreList, setAllGenreList, accountList, setAccountList, currentUser, setCurrentUser } = useStoreContext();
+    const { currentUser, setCurrentUser, userGenreList, setUserGenreList } = useStoreContext();
 
     const totalGenreList = [
         { "genreName": "Action", "id": 28 },
@@ -61,8 +61,9 @@ function RegisterView() {
                 signInMethod: 'email',
                 previousPerchaseHistory: []
             })
-            
-            setAllGenreList((prevList) => prevList.set(email, chosenGenreList)); //delete this line when db is implemented
+
+            localStorage.setItem('genrePreference', JSON.stringify(chosenGenreList));
+            setUserGenreList(chosenGenreList);
             navigate('/movies');
         } catch (error) {
             switch (error.code) {
@@ -110,6 +111,8 @@ function RegisterView() {
                 previousPerchaseHistory: []
             })
 
+            localStorage.setItem('genrePreference', JSON.stringify(chosenGenreList));
+            setUserGenreList(chosenGenreList);
             navigate('/movies');
         } catch (error) {
             switch (error.code) {

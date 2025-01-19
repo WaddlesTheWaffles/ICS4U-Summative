@@ -11,16 +11,9 @@ function HeaderSection() {
     const auth = getAuth();
     const { currentUser, setCurrentUser } = useStoreContext();
 
-    // useEffect(() => {
-    //     const unsubscribe = auth.onAuthStateChanged((user) => {
-    //         setCurrentUser(user || {}); // Set currentUser to Firebase user or an empty object
-    //     });
-
-    //     return () => unsubscribe();
-    // }, [setCurrentUser]);
-
     function logout() {
         auth.signOut();
+        localStorage.clear();
         setCurrentUser({});
         navigate('/');
     }

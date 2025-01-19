@@ -9,7 +9,7 @@ function LoginView() {
     const auth = getAuth();
     const navigate = useNavigate();
     const { cart, setCart } = useStoreContext();
-    const { currentUser, setCurrentUser, setAllGenreList } = useStoreContext();
+    const { currentUser, setCurrentUser } = useStoreContext();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const genreList = [ //temporary genre list for when the user signs in with google
