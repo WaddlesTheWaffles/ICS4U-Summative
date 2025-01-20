@@ -3,17 +3,17 @@ import HeaderSection from "../Components/HeaderSection";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStoreContext } from "../Context";
-import { getAuth } from 'firebase/auth';
+import { getAuth, EmailAuthProvider, reauthenticateWithCredential, updateProfile, updatePassword } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, firestore } from "../firebase";
-import { get } from 'immutable';
+import { get, update } from 'immutable';
 import { use } from 'react';
 
 function SettingsView() {
 
     const navigate = useNavigate();
     const auth = getAuth();
-    const { accountList, setAccountList, currentUser, setCurrentUser, allGenreList, setAllGenreList } = useStoreContext();
+    const { accountList, setAccountList, currentUser, setCurrentUser, userGenreList, setUserGenreList } = useStoreContext();
     const [userData, setUserData] = useState(null);
 
     useEffect(() => {
@@ -35,7 +35,6 @@ function SettingsView() {
             fetchUserData();
         }
     }, [auth.currentUser]);
-    //use userData.signInMethod to check if user is signed in with google or email
 
     const totalGenreList = [
         { "genreName": "Action", "id": 28 },
@@ -56,6 +55,7 @@ function SettingsView() {
     ];
 
     const [email, setEmail] = useState((auth.currentUser).email);
+    const [password, setPassword] = useState(undefined);
 
     try {
         const testNameSplit = (auth.currentUser).displayName.split(' ');
@@ -66,7 +66,7 @@ function SettingsView() {
     const [firstName, setFirstName] = useState(nameSplit[0]);
     const [lastName, setLastName] = useState(nameSplit[1]);
 
-    const [chosenGenreList, setChosenGenreList] = useState(allGenreList.get(auth.currentUser.email) || []);
+    const [chosenGenreList, setChosenGenreList] = useState(userGenreList);
 
     function renderCheckboxes() {
         return totalGenreList.map((genre) => (
@@ -100,20 +100,71 @@ function SettingsView() {
         });
     }
 
-    function applyChanges() {
+    async function applyChanges() {
+
+        const verifyPassword = async (currentUser, enteredPassword) => {
+            try {
+                const credential = EmailAuthProvider.credential(currentUser.email, enteredPassword);
+                await reauthenticateWithCredential(currentUser, credential);
+
+                console.log("Password matches! User successfully reauthenticated.");
+                return true; // Password is correct
+            } catch (error) {
+                if (error.code === "auth/wrong-password") {
+                    console.error("The entered password is incorrect.");
+                } else {
+                    alert('Error during reauthentication. Please try again later.');
+                    console.error("Error during reauthentication:", error);
+                }
+                return false;
+            }
+        }
 
         if (chosenGenreList.length < 10) {
             alert('Please choose minimum 10 genres')
         } else {
-            let accountIndex = accountList.findIndex(account => account.email === currentUser.email);
-            currentUser.firstName = firstName;
-            currentUser.lastName = lastName;
-            accountList[accountIndex] = currentUser;
-            setAllGenreList(allGenreList.set(email, chosenGenreList))
-            alert("Settings have been saved.");
+
+            if (password === undefined) {
+                //do nothing user doesnt want to change password
+            } else {
+                if (password.length >= 6) {
+                    if (verifyPassword(auth.currentUser, password)) {
+                        alert('New password cannot be the same as the old password')
+                    } else {
+                        await updatePassword(auth.currentUser, password)
+                    }
+                } else {
+                    alert('Password must be at least 6 characters long')
+                }
+            }
+
+            await updateProfile(auth.currentUser, {
+                displayName: firstName + ' ' + lastName
+            }).then(() => {
+                localStorage.setItem('user', JSON.stringify(auth.currentUser));
+                setCurrentUser(auth.currentUser);
+                localStorage.setItem('genrePreference', JSON.stringify(chosenGenreList));
+                setUserGenreList(chosenGenreList);
+
+                const docRef = doc(firestore, 'users', (auth.currentUser).uid);
+                updateDoc(docRef, {
+                    genreList: chosenGenreList,
+                    firstName: firstName,
+                    lastName: lastName
+                });
+
+
+                alert("Settings have been saved.");
+            }).catch((error) => {
+                console.error("Error updating user profile:", error);
+                alert('Error updating user profile. Please try again later.');
+            });
+
+
+
         }
     }
-
+    //use userData.signInMethod to check if user is signed in with google or email
     return (
         <div>
             <HeaderSection />
@@ -125,6 +176,8 @@ function SettingsView() {
                     <input required className={styles.settingsInfoBox} type="text" value={firstName} onChange={(event) => { setFirstName(String(event.target.value)) }} />
                     <label className={styles.settingsBoxLabel} >Last Name</label>
                     <input required className={styles.settingsInfoBox} type="text" value={lastName} onChange={(event) => { setLastName(String(event.target.value)) }} />
+                    <label className={styles.settingsBoxLabel} >Change Password</label>
+                    <input className={styles.settingsInfoBox} type="text" value={password} />
                     <label className={styles.settingsBoxLabel} >Email</label>
                     <input disabled className={styles.settingsInfoBox} type="text" value={email} />
                 </div>
