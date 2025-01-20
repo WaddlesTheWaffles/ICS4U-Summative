@@ -59,7 +59,7 @@ function RegisterView() {
                 lastName: lastName,
                 genreList: chosenGenreList,
                 signInMethod: 'email',
-                previousPerchaseHistory: []
+                previousPurchaseHistory: []
             })
 
             localStorage.setItem('genrePreference', JSON.stringify(chosenGenreList));
@@ -108,7 +108,7 @@ function RegisterView() {
                 lastName: lastName,
                 genreList: chosenGenreList,
                 signInMethod: 'google',
-                previousPerchaseHistory: []
+                previousPurchaseHistory: []
             })
 
             localStorage.setItem('genrePreference', JSON.stringify(chosenGenreList));

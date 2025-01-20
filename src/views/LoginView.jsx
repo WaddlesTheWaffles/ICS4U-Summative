@@ -3,16 +3,19 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStoreContext } from "../Context";
 import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { firestore } from '../firebase';
 import HeaderSection from "../Components/HeaderSection";
+import { Map } from 'immutable';
 
 function LoginView() {
     const auth = getAuth();
     const navigate = useNavigate();
     const { cart, setCart } = useStoreContext();
-    const { currentUser, setCurrentUser } = useStoreContext();
+    const { setCurrentUser, setUserGenreList, setPreviousPurchaseHistory } = useStoreContext();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const genreList = [ //temporary genre list for when the user signs in with google
+    const genreList = [ //temporary genre list for when the user creates an account with google in login
         { "genreName": "Action", "id": 28 },
         { "genreName": "Adventure", "id": 12 },
         { "genreName": "Animation", "id": 16 },
@@ -35,6 +38,19 @@ function LoginView() {
             const user = await signInWithEmailAndPassword(auth, email, password);
             setCurrentUser(user.user);
             localStorage.setItem('user', JSON.stringify(auth.currentUser));
+
+            const docRef = doc(firestore, 'users', auth.currentUser.uid);
+            const docSnapshot = await getDoc(docRef);
+            if (docSnapshot.exists()) {
+                const userInfo = docSnapshot.data();
+                localStorage.setItem('genrePreference', JSON.stringify(userInfo.genreList));
+                localStorage.setItem('previousPurchaseHistory', JSON.stringify(userInfo.previousPurchaseHistory));
+                setUserGenreList(userInfo.genreList);
+                setPreviousPurchaseHistory(Map(userInfo.previousPurchaseHistory));
+            } else {
+                console.error("Document does not exist");
+            }
+
             setCart(cart.clear());
             navigate('/movies');
         } catch (error) {
@@ -66,6 +82,10 @@ function LoginView() {
         try {
             const user = (await signInWithPopup(auth, new GoogleAuthProvider())).user;
             setCurrentUser(auth.currentUser);
+            localStorage.setItem('user', JSON.stringify(auth.currentUser));
+
+
+
             setCart(cart.clear());
             navigate('/movies');
         } catch (error) {

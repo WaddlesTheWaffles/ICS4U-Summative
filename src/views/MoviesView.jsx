@@ -26,20 +26,18 @@ function MoviesView() {
    useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, async (user) => {
          if (user) {
-            console.log("Current user:", user); // Debugging line to check the current user
             setCurrentUser(user);
             const docRef = doc(firestore, 'users', user.uid);
             const docSnapshot = await getDoc(docRef);
             if (docSnapshot.exists()) {
                const userInfo = docSnapshot.data();
-               console.log("User info:", userInfo); // Debugging line to check the fetched data
                setFirstName(userInfo.firstName);
                setLastName(userInfo.lastName);
             } else {
-               console.log("Document does not exist");
+               console.error("Document does not exist");
             }
          } else {
-            console.log("No current user");
+            console.error("No current user");
          }
       });
 

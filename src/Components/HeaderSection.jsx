@@ -4,18 +4,25 @@ import { useNavigate } from "react-router-dom";
 import { useStoreContext } from "../Context";
 import { getAuth } from 'firebase/auth';
 import { auth } from "../firebase";
+import { Map } from 'immutable';
 
 function HeaderSection() {
 
     const navigate = useNavigate();
     const auth = getAuth();
-    const { currentUser, setCurrentUser } = useStoreContext();
+    const { setUserGenreList, setCurrentUser, setCart, setPreviousPurchaseHistory } = useStoreContext();
 
     function logout() {
-        auth.signOut();
-        localStorage.clear();
-        setCurrentUser({});
-        navigate('/');
+        auth.signOut().then(() => {
+            setCurrentUser({});
+            setUserGenreList([]);
+            setCart(Map());
+            setPreviousPurchaseHistory(Map());
+            localStorage.clear();
+            navigate('/');
+        }).catch((error) => {
+            console.error("Error during logout:", error);
+        });
     }
 
     return (

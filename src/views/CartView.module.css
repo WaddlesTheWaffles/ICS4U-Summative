@@ -14,7 +14,7 @@
     width: 125px;
     height: 50px;
     margin-left: 15%;
-    margin-top: -7%;
+    margin-top: -3%;
 }
 
 .cart {
@@ -54,4 +54,16 @@
 .cartMovieTitle {
     color: hotpink;
     text-align: center;
+}
+
+.checkoutButton {
+    background-color: hotpink;
+    color: white;
+    font-size: 25px;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    border-radius: 7px;
+    height: 50px;
+    width: 125px;
+    position: relative;
+    margin-left: 46%;
 }

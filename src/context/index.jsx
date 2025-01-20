@@ -9,13 +9,14 @@ const StoreContext = createContext();
 
 export const StoreProvider = ({ children }) => {
     const navigate = useNavigate();
-    const [accountList, setAccountList] = useState([]);
+    const [accountList, setAccountList] = useState([]); //remove later
     const [userGenreList, setUserGenreList] = useState([]);
     const [currentUser, setCurrentUser] = useState({})
     const [cart, setCart] = useState(Map());
+    const [previousPurchaseHistory, setPreviousPurchaseHistory] = useState(Map());
 
     return (
-        <StoreContext.Provider value={{ accountList, setAccountList, userGenreList, setUserGenreList, currentUser, setCurrentUser, cart, setCart }}>
+        <StoreContext.Provider value={{ accountList, setAccountList, userGenreList, setUserGenreList, currentUser, setCurrentUser, cart, setCart, previousPurchaseHistory, setPreviousPurchaseHistory }}>
             {children}
         </StoreContext.Provider>
     );

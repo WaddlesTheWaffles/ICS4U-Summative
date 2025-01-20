@@ -45,18 +45,6 @@ function DetailView({ movieId: propMovieId, backToGenre, clickedFromFeature }) {
                             `https://placehold.co/400x600?text=Movie+Poster+Unavailable+for+${movie.original_title}`}
                         alt={movie.original_title}
                     />
-                    {featureClicked ? <button disabled className={styles.altBuyButton} type="button">Unavailable</button>
-                        : cart.has(movie.id) ? (
-                            <button disabled className={styles.buyButton} type="button">Added</button>
-                        ) : (
-                            <button className={styles.buyButton} type="button" onClick={(event) => {
-                                event.preventDefault();
-                                setCart(cart.set(movie.id, { movieTitle: movie.title, moviePoster: movie.poster_path }));
-                            }}
-                            >
-                                Buy
-                            </button>
-                        )}
                     <div className={styles.movieInfo}>
                         <h1 className={styles.text} >{movie.original_title}</h1>
                         {movie.original_language == "en" ? null : <h1 className={styles.text} >Translated Title: {movie.title}</h1>}
