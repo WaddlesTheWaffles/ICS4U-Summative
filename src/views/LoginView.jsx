@@ -84,7 +84,25 @@ function LoginView() {
             setCurrentUser(auth.currentUser);
             localStorage.setItem('user', JSON.stringify(auth.currentUser));
 
+            localStorage.setItem('user', JSON.stringify(auth.currentUser));
 
+            const docRef = doc(firestore, 'users', auth.currentUser.uid);
+            const docSnapshot = await getDoc(docRef);
+            if (docSnapshot.exists()) {
+                const userInfo = docSnapshot.data();
+                if (userInfo.genreList.length < 10) {
+                    localStorage.setItem('genrePreference', JSON.stringify(genreList));
+                    setUserGenreList(genreList);
+                } else {
+                    localStorage.setItem('genrePreference', JSON.stringify(userInfo.genreList));
+                    setUserGenreList(userInfo.genreList);
+                }
+
+                localStorage.setItem('previousPurchaseHistory', JSON.stringify(userInfo.previousPurchaseHistory));
+                setPreviousPurchaseHistory(Map(userInfo.previousPurchaseHistory));
+            } else {
+                console.error("Document does not exist");
+            }
 
             setCart(cart.clear());
             navigate('/movies');
@@ -124,7 +142,7 @@ function LoginView() {
                     <input required className={styles.infoBoxes} type="password" value={password} onChange={(event) => { setPassword(String(event.target.value)) }} />
                     <input className={styles.loginButton} type="submit" value={"Login"} />
 
-                    <button className='googleLoginButton' onClick={(event) => { event.preventDefault(); signInWithGoogle() }}>Login With Google</button>
+                    <div className={styles.googleLoginButton} onClick={(event) => { event.preventDefault(); signInWithGoogle(); }} role="button" tabIndex="0">Login With Google</div>
                 </form>
             </div>
         </div>

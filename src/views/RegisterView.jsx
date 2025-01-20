@@ -184,7 +184,7 @@ function RegisterView() {
                     </div>
 
                     <input className={styles.registerButton} type="submit" value={"Register"} />
-                    <button className='googleRegisterButton' onClick={(event) => { event.preventDefault(); registerByGoogle(); }}>Register With Google</button>
+                    <div className={styles.googleRegisterButton} onClick={(event) => { event.preventDefault(); registerByGoogle(); }} role="button" tabIndex="0">Register With Google</div>
                 </form>
             </div>
         </div >

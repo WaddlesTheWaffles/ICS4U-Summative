@@ -22,28 +22,36 @@ function MoviesView() {
    const [clickedFromFeature, setClickedFromFeature] = useState(false);
    const [firstName, setFirstName] = useState("");
    const [lastName, setLastName] = useState("");
+   const [loadingName, setLoadingName] = useState(true);
 
    useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, async (user) => {
-         if (user) {
-            setCurrentUser(user);
-            const docRef = doc(firestore, 'users', user.uid);
-            const docSnapshot = await getDoc(docRef);
-            if (docSnapshot.exists()) {
-               const userInfo = docSnapshot.data();
-               setFirstName(userInfo.firstName);
-               setLastName(userInfo.lastName);
-            } else {
-               console.error("Document does not exist");
-            }
-         } else {
-            console.error("No current user");
-         }
+          if (user) {
+              setCurrentUser(user);
+              const docRef = doc(firestore, 'users', user.uid);
+              const docSnapshot = await getDoc(docRef);
+
+              if (docSnapshot.exists()) {
+                  const data = docSnapshot.data();
+                  if (data.signInMethod === 'google') {
+                      const userData = JSON.parse(localStorage.getItem('user'));
+                      setFirstName(userData.displayName.split(' ')[0]);
+                      setLastName(userData.displayName.split(' ')[1]);
+                  } else {
+                      setFirstName(data.firstName);
+                      setLastName(data.lastName);
+                  }
+              } else {
+                  console.error("Document does not exist");
+              }
+          } else {
+              console.error("No current user");
+          }
+          setLoadingName(false);
       });
 
       return () => unsubscribe();
-   }, [auth, setCurrentUser]);
-
+  }, [auth, setCurrentUser]);
    function setGenreId(genre) {
       setGenreSelected(genre);
       setdetailViewDisplayed(false)
@@ -57,6 +65,10 @@ function MoviesView() {
 
    function returnToGenreView() {
       setdetailViewDisplayed(false)
+   }
+
+   if (loadingName) {
+      return <div>Loading...</div>;
    }
 
    return (

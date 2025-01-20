@@ -6,8 +6,7 @@ import { useStoreContext } from "../Context";
 import { getAuth, EmailAuthProvider, reauthenticateWithCredential, updateProfile, updatePassword } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, firestore } from "../firebase";
-import { get, update } from 'immutable';
-import { use } from 'react';
+import { set } from 'immutable';
 
 function SettingsView() {
 
@@ -15,15 +14,29 @@ function SettingsView() {
     const auth = getAuth();
     const { accountList, setAccountList, currentUser, setCurrentUser, userGenreList, setUserGenreList } = useStoreContext();
     const [userData, setUserData] = useState(null);
+    const [signInMethod, setSignInMethod] = useState(null);
+    const [firstName, setFirstName] = useState(null);
+    const [lastName, setLastName] = useState(null);
 
     useEffect(() => {
         if (auth.currentUser) {
             const fetchUserData = async () => {
                 try {
-                    const docRef = doc(firestore, 'users', (auth.currentUser).uid);
+                    const docRef = doc(firestore, 'users', auth.currentUser.uid);
                     const docSnapshot = await getDoc(docRef);
                     if (docSnapshot.exists()) {
-                        setUserData(docSnapshot.data());
+                        const data = docSnapshot.data();
+                        setUserData(data);
+                        setChosenGenreList(data.genreList || []);
+                        if (data.signInMethod === 'email') {
+                            setSignInMethod('email');
+                            setFirstName(data.firstName);
+                            setLastName(data.lastName);
+                        } else {
+                            setSignInMethod('google');
+                            setFirstName((auth.currentUser).displayName.split(' ')[0]);
+                            setLastName((auth.currentUser).displayName.split(' ')[1]);
+                        }
                     } else {
                         console.log("Document does not exist");
                     }
@@ -63,8 +76,7 @@ function SettingsView() {
         alert('There is no display Name availble')
     }
     const nameSplit = (auth.currentUser).displayName.split(' ');
-    const [firstName, setFirstName] = useState(nameSplit[0]);
-    const [lastName, setLastName] = useState(nameSplit[1]);
+
 
     const [chosenGenreList, setChosenGenreList] = useState(userGenreList);
 
@@ -100,43 +112,55 @@ function SettingsView() {
         });
     }
 
-    async function applyChanges() {
+    async function applyChangesEmail() {
 
         const verifyPassword = async (currentUser, enteredPassword) => {
             try {
+                // Check if the user is authenticated before proceeding
+                if (!currentUser) {
+                    throw new Error("User not authenticated");
+                }
+        
                 const credential = EmailAuthProvider.credential(currentUser.email, enteredPassword);
+                
+                // Attempt to reauthenticate with the provided credentials
                 await reauthenticateWithCredential(currentUser, credential);
-
+                
                 console.log("Password matches! User successfully reauthenticated.");
                 return true; // Password is correct
             } catch (error) {
                 if (error.code === "auth/wrong-password") {
                     console.error("The entered password is incorrect.");
+                } else if (error.code === "auth/invalid-credential") {
+                    console.error("Invalid credentials provided. Please check the email and password.");
                 } else {
                     alert('Error during reauthentication. Please try again later.');
                     console.error("Error during reauthentication:", error);
                 }
-                return false;
+                return false; // Password does not match
             }
-        }
-
+        };
+        
         if (chosenGenreList.length < 10) {
-            alert('Please choose minimum 10 genres')
+            alert('Please choose a minimum 10 genres');
         } else {
-
             if (password === undefined) {
-                //do nothing user doesnt want to change password
+                // Do nothing: user doesn't want to change password
             } else {
                 if (password.length >= 6) {
-                    if (verifyPassword(auth.currentUser, password)) {
-                        alert('New password cannot be the same as the old password')
+                    const isPasswordValid = await verifyPassword(auth.currentUser, password);
+                    if (isPasswordValid) {
+                        alert('New password cannot be the same as the old password');
+                        return;
                     } else {
-                        await updatePassword(auth.currentUser, password)
+                        await updatePassword(auth.currentUser, password);
                     }
                 } else {
-                    alert('Password must be at least 6 characters long')
+                    alert('Password must be at least 6 characters long');
+                    return;
                 }
             }
+        }
 
             await updateProfile(auth.currentUser, {
                 displayName: firstName + ' ' + lastName
@@ -153,7 +177,6 @@ function SettingsView() {
                     lastName: lastName
                 });
 
-
                 alert("Settings have been saved.");
             }).catch((error) => {
                 console.error("Error updating user profile:", error);
@@ -163,34 +186,78 @@ function SettingsView() {
 
 
         }
+
+    function applyChangesGoogle() {
+
+        if (chosenGenreList.length < 10) {
+            alert('Please choose a minimum 10 genres')
+        } else {
+            localStorage.setItem('genrePreference', JSON.stringify(chosenGenreList));
+            setUserGenreList(chosenGenreList);
+
+            const docRef = doc(firestore, 'users', (auth.currentUser).uid);
+            updateDoc(docRef, {
+                genreList: chosenGenreList,
+            });
+
+            alert("Settings have been saved.");
+        }
     }
-    //use userData.signInMethod to check if user is signed in with google or email
+
+    if (!signInMethod) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <div>
             <HeaderSection />
             <h1 className={styles.pageTitle} >Settings</h1>
-            <form className={styles.settingsForm} onSubmit={(event) => { event.preventDefault(); applyChanges(); }}>
-                <div className={styles.accountInfo} >
-                    <h2 className={styles.infoTitle} >Account Info</h2>
-                    <label className={styles.settingsBoxLabel} >First Name</label>
-                    <input required className={styles.settingsInfoBox} type="text" value={firstName} onChange={(event) => { setFirstName(String(event.target.value)) }} />
-                    <label className={styles.settingsBoxLabel} >Last Name</label>
-                    <input required className={styles.settingsInfoBox} type="text" value={lastName} onChange={(event) => { setLastName(String(event.target.value)) }} />
-                    <label className={styles.settingsBoxLabel} >Change Password</label>
-                    <input className={styles.settingsInfoBox} type="text" value={password} />
-                    <label className={styles.settingsBoxLabel} >Email</label>
-                    <input disabled className={styles.settingsInfoBox} type="text" value={email} />
-                </div>
 
-                <div className={styles.genresSelection} >
-                    <h2 className={styles.genreTitle} >Genres Selected</h2>
-                    {renderCheckboxes()}
-                </div>
+            {signInMethod === 'email' ? (
+                <form className={styles.settingsForm} onSubmit={(event) => { event.preventDefault(); applyChangesEmail(); }}>
+                    <div className={styles.accountInfo}>
+                        <h2 className={styles.infoTitle} >Account Info</h2>
+                        <label className={styles.settingsBoxLabel} >First Name</label>
+                        <input required className={styles.settingsInfoBox} type="text" value={firstName} onChange={(event) => { setFirstName(String(event.target.value)) }} />
+                        <label className={styles.settingsBoxLabel} >Last Name</label>
+                        <input required className={styles.settingsInfoBox} type="text" value={lastName} onChange={(event) => { setLastName(String(event.target.value)) }} />
+                        <label className={styles.settingsBoxLabel} >Change Password</label>
+                        <input className={styles.settingsInfoBox} type="text" value={password} onChange={(event) => { setPassword(String(event.target.value)) }} />
+                        <label className={styles.settingsBoxLabel} >Email</label>
+                        <input disabled className={styles.settingsInfoBox} type="text" value={email} />
+                    </div>
 
-                <button className={styles.applyButton} type="submit" >Apply Settings</button>
-                <button className={styles.backButtonSettings} type="button" onClick={() => navigate('/movies')}>Back</button>
-            </form>
-        </div>
+                    <div className={styles.genresSelection} >
+                        <h2 className={styles.genreTitle} >Genres Selected</h2>
+                        {renderCheckboxes()}
+                    </div>
+
+                    <button className={styles.applyButton} type="submit" >Apply Settings</button>
+                    <button className={styles.backButtonSettings} type="button" onClick={() => navigate('/movies')}>Back</button>
+                </form>
+            ) : (
+
+                <form className={styles.settingsForm} onSubmit={(event) => { event.preventDefault(); applyChangesGoogle(); }}>
+                    <div className={styles.accountInfo}>
+                        <h2 className={styles.infoTitle} >Account Info</h2>
+                        <label className={styles.settingsBoxLabel} >First Name</label>
+                        <input disabled className={styles.settingsInfoBox} type="text" value={firstName} onChange={(event) => { setFirstName(String(event.target.value)) }} />
+                        <label className={styles.settingsBoxLabel} >Last Name</label>
+                        <input disabled className={styles.settingsInfoBox} type="text" value={lastName} onChange={(event) => { setLastName(String(event.target.value)) }} />
+                        <label className={styles.settingsBoxLabel} >Email</label>
+                        <input disabled className={styles.settingsInfoBox} type="text" value={email} />
+                    </div>
+
+                    <div className={styles.genresSelection} >
+                        <h2 className={styles.genreTitle} >Genres Selected</h2>
+                        {renderCheckboxes()}
+                    </div>
+
+                    <button className={styles.applyButton} type="submit" >Apply Settings</button>
+                    <button className={styles.backButtonSettings} type="button" onClick={() => navigate('/movies')}>Back</button>
+                </form>
+            )}
+        </div >
     )
 }
 
